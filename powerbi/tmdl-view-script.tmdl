@@ -198,7 +198,7 @@ createOrReplace
 		measure 'Revenue' = SUM ( fct_sales[revenue_usd] )
 			formatString: \$#,0
 
-		measure 'Units' = SUM ( fct_sales[units] )
+		measure 'Units Sold' = SUM ( fct_sales[units] )
 			formatString: #,0
 
 		measure 'Revenue LY' = CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( dim_date[date_day] ) )

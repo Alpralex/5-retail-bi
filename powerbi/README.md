@@ -24,7 +24,7 @@ dim_dept ──┤   stockout_runs  (4,353 suspected stock-outs)
 
 | Measure | Definition |
 | --- | --- |
-| Revenue, Units | Sums over fct_sales |
+| Revenue, Units Sold | Sums over fct_sales (the measure is not called Units because fct_sales has a units column, and Power BI names are case-insensitive) |
 | Revenue YoY % | Against `SAMEPERIODLASTYEAR` |
 | Revenue Last 52 Weeks, Revenue 52w YoY % | 364 days ending on the last day with sales, against the 364 days before |
 | Forecast Bias % | (forecast − actual) ÷ actual |
