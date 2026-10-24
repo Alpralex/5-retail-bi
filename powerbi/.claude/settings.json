@@ -1,0 +1,5 @@
+{
+  "enabledPlugins": {
+    "powerbi-authoring@fabric-collection": true
+  }
+}
