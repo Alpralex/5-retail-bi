@@ -1,0 +1,227 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "b90a09799e01c70d3c1d",
+  "position": {
+    "x": 512,
+    "y": 136,
+    "z": 4000,
+    "height": 568,
+    "width": 752,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "stockout_runs"
+                    }
+                  },
+                  "Property": "item_id"
+                }
+              },
+              "queryRef": "stockout_runs.item_id",
+              "nativeQueryRef": "item_id",
+              "displayName": "Item"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "stockout_runs"
+                    }
+                  },
+                  "Property": "store_id"
+                }
+              },
+              "queryRef": "stockout_runs.store_id",
+              "nativeQueryRef": "store_id",
+              "displayName": "Store"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "stockout_runs"
+                    }
+                  },
+                  "Property": "run_start"
+                }
+              },
+              "queryRef": "stockout_runs.run_start",
+              "nativeQueryRef": "run_start",
+              "displayName": "Start"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "stockout_runs"
+                    }
+                  },
+                  "Property": "run_days"
+                }
+              },
+              "queryRef": "stockout_runs.run_days",
+              "nativeQueryRef": "run_days",
+              "displayName": "Days"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "stockout_runs"
+                    }
+                  },
+                  "Property": "Est. Lost Revenue"
+                }
+              },
+              "queryRef": "stockout_runs.Est. Lost Revenue",
+              "nativeQueryRef": "Est. Lost Revenue",
+              "displayName": "Est. lost revenue"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "stockout_runs"
+                  }
+                },
+                "Property": "Est. Lost Revenue"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Largest suspected stock-outs'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Table of suspected stock-outs by item and store with start date, length in days and estimated lost revenue, largest first.'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sorted by estimated lost revenue'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
