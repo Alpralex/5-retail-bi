@@ -55,3 +55,23 @@ models:
     columns:
       - name: wape
         tests: [not_null]
+
+  - name: mart_item_store_profile
+    description: ABC-XYZ class, demand class, demand statistics and stock-out history per item and store, last 364 days.
+    tests:
+      - row_count_equals: {expected: 30490}
+    columns:
+      - name: abc_class
+        tests:
+          - accepted_values:
+              values: ['A', 'B', 'C']
+      - name: xyz_class
+        tests:
+          - accepted_values:
+              values: ['X', 'Y', 'Z']
+      - name: demand_class
+        tests:
+          - accepted_values:
+              values: ['Smooth', 'Erratic', 'Intermittent', 'Lumpy', 'No sales']
+      - name: std_daily_units
+        tests: [not_null]
