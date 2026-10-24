@@ -2,7 +2,7 @@
 
 A retail BI project on real data: five years of daily Walmart sales (the public M5 dataset), modelled in SQL with dbt on DuckDB, tested, and compared with the forecast that won the M5 competition.
 
-**Live dashboard:** https://claude.ai/artifact/NvkuiXwJqCwAjfnFptf8ox
+**Live dashboard:** https://guilhermerigonato.com/5-retail-bi/ · **Power BI version:** model, DAX and report guide in [`powerbi/`](powerbi/) · **Stack:** SQL, dbt, DuckDB, Power BI (PBIP/TMDL), Python
 
 ## Findings
 
