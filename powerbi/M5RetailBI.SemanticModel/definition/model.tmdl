@@ -22,3 +22,5 @@ ref table stockout_runs
 ref table DateTableTemplate_a0435f40-c6db-4a98-a441-d57c251c7818
 ref table LocalDateTable_a8c8eb0f-566d-4ea0-bc16-c548467f1fca
 
+ref cultureInfo en-US
+
