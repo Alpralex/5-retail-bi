@@ -2,32 +2,33 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400&display=swap">
 <style>
 /* Layout: a store-operations review. Findings first, one filter row, then four panels that answer: how big, how well forecast, where sales are lost, which items. */
 :root {
-  --paper: #f5f6f4;
+  --paper: #f7f8f9;
   --sheet: #ffffff;
-  --ink: #16202a;
-  --muted: #5a6670;
-  --rule: #d6dbd9;
-  --grid: #e6e9e8;
-  --signal: #b45309;
-  --signal-soft: #fbefe0;
+  --ink: #1b2430;
+  --muted: #5d6876;
+  --rule: #dce0e5;
+  --grid: #eceff2;
+  --signal: #1f5a85;
+  --signal-soft: #e6eef5;
   --s1: #2a78d6;
   --s2: #eb6834;
   --s3: #1baf7a;
   --seq-1: #cde2fb; --seq-2: #9ec5f4; --seq-3: #6da7ec; --seq-4: #3987e5; --seq-5: #256abf;
   --good: #1f7a35;
   --warn: #9a6c00;
-  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --body: "Source Serif 4", Georgia, serif;
-  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --display: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --serif: "IBM Plex Serif", Georgia, serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #12181d; --sheet: #182128; --ink: #e6eaec; --muted: #9aa7b0; --rule: #2c3943; --grid: #233039;
-    --signal: #f0a04b; --signal-soft: #2d2216;
+    --paper: #121519; --sheet: #181c21; --ink: #e3e7eb; --muted: #97a2ad; --rule: #2a3038; --grid: #20252c;
+    --signal: #86b6da; --signal-soft: #1a2633;
     --s1: #3987e5; --s2: #d95926; --s3: #199e70;
     --seq-1: #1a2c40; --seq-2: #184f95; --seq-3: #1c5cab; --seq-4: #2a78d6; --seq-5: #5598e7;
     --good: #5cb873; --warn: #d9a63a;
@@ -35,8 +36,8 @@
   }
 }
 :root[data-theme="dark"] {
-  --paper: #12181d; --sheet: #182128; --ink: #e6eaec; --muted: #9aa7b0; --rule: #2c3943; --grid: #233039;
-  --signal: #f0a04b; --signal-soft: #2d2216;
+  --paper: #121519; --sheet: #181c21; --ink: #e3e7eb; --muted: #97a2ad; --rule: #2a3038; --grid: #20252c;
+  --signal: #86b6da; --signal-soft: #1a2633;
   --s1: #3987e5; --s2: #d95926; --s3: #199e70;
   --seq-1: #1a2c40; --seq-2: #184f95; --seq-3: #1c5cab; --seq-4: #2a78d6; --seq-5: #5598e7;
   --good: #5cb873; --warn: #d9a63a;
@@ -45,54 +46,55 @@
 body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 1rem; line-height: 1.55; }
 .wrap { max-width: 72rem; margin: 0 auto; padding-block: 2.5rem 4rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 2rem; }
 h1, h2, h3 { font-family: var(--display); margin: 0; line-height: 1.15; text-wrap: balance; }
-h1 { font-size: clamp(1.9rem, 4.6vw, 2.9rem); font-weight: 800; font-stretch: 108%; }
-h2 { font-size: 1.2rem; font-weight: 700; }
+h1 { font-family: var(--serif); font-size: clamp(1.8rem, 4.2vw, 2.5rem); font-weight: 600; }
+h2 { font-size: 1.05rem; font-weight: 600; }
 p { margin: 0; max-width: 68ch; }
-.label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.label { font-size: 0.88rem; color: var(--muted); }
+.crumb { font-size: 0.9rem; }
 a { color: var(--signal); text-underline-offset: 3px; }
 header { display: grid; gap: 0.75rem; }
-.meta { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; font-size: 0.9rem; color: var(--muted); }
 
 .findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; counter-reset: f; }
-.finding { border-top: 2px solid var(--ink); padding-top: 0.75rem; display: grid; gap: 0.35rem; min-width: 0; }
-.finding b { font-family: var(--display); font-size: 1.05rem; }
+.finding { border-top: 1px solid var(--ink); padding-top: 0.75rem; display: grid; gap: 0.35rem; min-width: 0; }
+.finding b { font-weight: 600; font-size: 1rem; }
 
 .filters { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; align-items: center; padding: 0.75rem 0; border-block: 1px solid var(--rule); position: sticky; top: env(safe-area-inset-top, 0px); background: var(--paper); z-index: 5; }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
-.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
-.seg button { font-family: var(--mono); font-size: 0.8rem; padding: 0.35rem 0.7rem; background: var(--sheet); color: var(--ink); border: 0; border-right: 1px solid var(--rule); cursor: pointer; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
+.seg button { font-family: var(--body); font-size: 0.88rem; padding: 0.35rem 0.7rem; background: var(--sheet); color: var(--ink); border: 0; border-right: 1px solid var(--rule); cursor: pointer; }
 .seg button:last-child { border-right: 0; }
 .seg button[aria-pressed="true"] { background: var(--signal-soft); color: var(--ink); box-shadow: inset 0 -2px 0 var(--signal); }
-select { font-family: var(--mono); font-size: 0.8rem; padding: 0.35rem 0.5rem; background: var(--sheet); color: var(--ink); border: 1px solid var(--rule); border-radius: 4px; }
+select { font-family: var(--body); font-size: 0.88rem; padding: 0.35rem 0.5rem; background: var(--sheet); color: var(--ink); border: 1px solid var(--rule); border-radius: 2px; }
 button:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
-.reset { font-family: var(--mono); font-size: 0.75rem; background: none; border: 0; color: var(--signal); cursor: pointer; text-decoration: underline; }
+.reset { font-family: var(--body); font-size: 0.85rem; background: none; border: 0; color: var(--signal); cursor: pointer; text-decoration: underline; }
 
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
-.kpi { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 1rem; display: grid; gap: 0.25rem; min-width: 0; }
-.kpi .v { font-family: var(--display); font-size: 1.9rem; font-weight: 700; font-stretch: 92%; font-variant-numeric: tabular-nums; }
-.kpi .d { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+.kpi { background: var(--sheet); border: 1px solid var(--rule); border-radius: 2px; padding: 1rem; display: grid; gap: 0.25rem; min-width: 0; }
+.kpi .v { font-family: var(--serif); font-size: 1.7rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+.kpi .d { font-size: 0.85rem; color: var(--muted); }
 .up { color: var(--good); } .down { color: var(--warn); }
 
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); gap: 1.25rem; }
-.panel { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 1.1rem; display: grid; gap: 0.75rem; align-content: start; min-width: 0; }
+.panel { background: var(--sheet); border: 1px solid var(--rule); border-radius: 2px; padding: 1.1rem; display: grid; gap: 0.75rem; align-content: start; min-width: 0; }
 .panel .sub { font-size: 0.9rem; color: var(--muted); }
 .chart { position: relative; width: 100%; }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
-.chart text { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.chart text { font-family: var(--body); font-size: 11px; fill: var(--muted); }
 .chart .lbl { fill: var(--ink); font-weight: 600; }
-.legend { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; font-family: var(--mono); font-size: 0.78rem; color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; font-size: 0.85rem; color: var(--ink); }
 .legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 0.35rem; }
 .legend i.dash { background: repeating-linear-gradient(90deg, var(--s2) 0 5px, transparent 5px 8px) !important; }
 
-.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 0.75rem; padding: 0.45rem 0.6rem; border-radius: 4px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); z-index: 3; line-height: 1.45; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--paper); font-family: var(--body); font-size: 0.8rem; padding: 0.45rem 0.6rem; border-radius: 3px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); z-index: 3; line-height: 1.45; }
 .tip[hidden] { display: none; }
 
 .tbl-wrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
 th, td { padding: 0.4rem 0.55rem; text-align: right; border-bottom: 1px solid var(--rule); font-variant-numeric: tabular-nums; white-space: nowrap; }
-th { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+th { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
 th:first-child, td:first-child { text-align: left; }
-td.cell { font-family: var(--mono); }
+td.cell { font-variant-numeric: tabular-nums; }
 .heat-1 { background: var(--seq-1); } .heat-2 { background: var(--seq-2); } .heat-3 { background: var(--seq-3); color: #fff; } .heat-4 { background: var(--seq-4); color: #fff; } .heat-5 { background: var(--seq-5); color: #fff; }
 .method { display: grid; gap: 0.5rem; font-size: 0.9rem; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 1rem; }
 .method ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.3rem; max-width: 80ch; }
@@ -102,7 +104,8 @@ td.cell { font-family: var(--mono); }
 
 <main class="wrap">
   <header>
-    <span class="label">Retail BI · Walmart M5 data · 10 stores · 2011–2016</span>
+    <p class="crumb"><a href="/">Guilherme Rigonato</a> <span class="label">/ Projects</span></p>
+    <span class="label">Walmart M5 data · 10 stores · 2011–2016</span>
     <h1>Where is a 10-store retailer losing sales?</h1>
     <p>Five years of daily sales for 3,049 products, modelled in SQL with dbt, checked by automated tests, and compared with the forecast that won the M5 competition.</p>
     <div class="meta">
