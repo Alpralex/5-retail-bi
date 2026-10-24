@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Suspected stock-outs found in daily item-store sales, 2011–2016",
+                    "value": "Runs of 7–56 zero-sales days on fast-moving items, last 365 days of data",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "13px",

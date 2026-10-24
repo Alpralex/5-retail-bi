@@ -431,7 +431,7 @@ function stockoutPage() {
   });
   return {
     name: p, displayName: "Stock-outs",
-    visuals: [...header(p, "Where do stock-outs cost the most?", "Suspected stock-outs found in daily item-store sales, 2011–2016"),
+    visuals: [...header(p, "Where do stock-outs cost the most?", "Runs of 7–56 zero-sales days on fast-moving items, last 365 days of data"),
       ...slicers(p), ...cards, byCategory, table],
   };
 }
