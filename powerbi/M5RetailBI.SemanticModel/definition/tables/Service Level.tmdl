@@ -1,0 +1,20 @@
+/// What-if parameter: target probability of not running out during the lead time.
+table 'Service Level'
+	lineageTag: e14a7dc8-3e33-47da-9cbc-9d56aa9791d2
+
+	column 'Service Level'
+		formatString: 0.0%
+		lineageTag: 093a4939-6730-468a-bea2-cf6b72f56e20
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Service Level]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+	partition 'Service Level' = calculated
+		mode: import
+		source = SELECTCOLUMNS ( GENERATESERIES ( 900, 995, 5 ), "Service Level", DIVIDE ( [Value], 1000 ) )
+

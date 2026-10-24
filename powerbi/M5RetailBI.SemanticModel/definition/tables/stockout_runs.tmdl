@@ -41,11 +41,6 @@ table stockout_runs
 		summarizeBy: none
 		sourceColumn: run_end
 
-		variation Variação
-			isDefault
-			relationship: 57888dad-4905-4824-9665-f5297e39927a
-			defaultHierarchy: LocalDateTable_a8c8eb0f-566d-4ea0-bc16-c548467f1fca.'Date Hierarchy'
-
 		annotation UnderlyingDateTimeDataType = Date
 
 	column run_days

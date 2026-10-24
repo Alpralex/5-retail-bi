@@ -1,0 +1,306 @@
+/// One row per item and store over the last 364 days with sales: demand statistics, ABC/XYZ class, demand class (Syntetos-Boylan) and suspected stock-out totals. Feeds the Inventory policy and Stock-out priorities pages.
+table item_store_profile
+	lineageTag: 25854f21-a0e9-48c6-843d-409859cee59a
+
+	/// Selected service level; 95% when nothing is selected.
+	measure 'Service Level Value' = SELECTEDVALUE ( 'Service Level'[Service Level], 0.95 )
+		formatString: 0.0%
+		displayFolder: Inventory
+		lineageTag: a9f634f2-1760-4b78-aaa1-468295d8e003
+
+	/// Selected lead time in days; 7 when nothing is selected.
+	measure 'Lead Time Value' = SELECTEDVALUE ( 'Lead Time'[Lead Time], 7 )
+		formatString: 0
+		displayFolder: Inventory
+		lineageTag: 2ebdf38f-01e7-460c-b82a-8c44f87a5fdf
+
+	/// Standard normal quantile for the selected service level.
+	measure Z = NORM.S.INV ( [Service Level Value] )
+		formatString: 0.00
+		displayFolder: Inventory
+		lineageTag: 7ed74c6a-8662-4750-9a85-128caafe58db
+
+	/// Sum over item-stores of z x standard deviation of daily units x square root of lead time.
+	measure 'Safety Stock Units' =
+			VAR _Z = [Z]
+			VAR _SqrtLeadTime = SQRT ( [Lead Time Value] )
+			RETURN
+			    SUMX ( item_store_profile, _Z * item_store_profile[std_daily_units] * _SqrtLeadTime )
+		formatString: #,0
+		displayFolder: Inventory
+		lineageTag: 1e6c9b51-2959-4c62-85dd-4e2e8b2ad0d4
+
+	/// Safety stock units valued at each item-store's average shelf price.
+	measure 'Safety Stock Value' =
+			VAR _Z = [Z]
+			VAR _SqrtLeadTime = SQRT ( [Lead Time Value] )
+			RETURN
+			    SUMX ( item_store_profile, _Z * item_store_profile[std_daily_units] * _SqrtLeadTime * item_store_profile[avg_price_usd] )
+		formatString: \$#,0
+		displayFolder: Inventory
+		lineageTag: 741ba102-3f2c-4158-a4c8-ac597a7f5d63
+
+	/// Average cycle stock: half of the lead-time demand, valued at shelf price.
+	measure 'Cycle Stock Value' =
+			VAR _LeadTime = [Lead Time Value]
+			RETURN
+			    SUMX ( item_store_profile, item_store_profile[mean_daily_units] * _LeadTime / 2 * item_store_profile[avg_price_usd] )
+		formatString: \$#,0
+		displayFolder: Inventory
+		lineageTag: 6e6309d9-56af-4c50-9fae-ad8c61f4ecd1
+
+	/// Safety stock plus average cycle stock, at shelf price.
+	measure 'Average Inventory Value' = [Safety Stock Value] + [Cycle Stock Value]
+		formatString: \$#,0
+		displayFolder: Inventory
+		lineageTag: 108f80bb-ec90-4e88-a95d-57c7490f5129
+
+	/// Number of item and store combinations.
+	measure Item-Stores = COUNTROWS ( item_store_profile )
+		formatString: #,0
+		displayFolder: Inventory
+		lineageTag: fc9717a9-29a4-47e4-ab60-88cb574a1c32
+
+	/// Revenue in the last 364 days with sales.
+	measure 'Profile Revenue' = SUM ( item_store_profile[revenue_52w_usd] )
+		formatString: \$#,0
+		displayFolder: Inventory
+		lineageTag: b6fca212-581d-4149-90ac-e726821347c6
+
+	/// Share of total last-364-day revenue, ignoring every filter on item_store_profile.
+	measure 'Revenue Share %' = DIVIDE ( [Profile Revenue], CALCULATE ( [Profile Revenue], ALL ( item_store_profile ) ) )
+		formatString: 0.0%
+		displayFolder: Inventory
+		lineageTag: 9534beb7-a772-4fd6-969c-442879d4cedf
+
+	/// Estimated revenue lost during suspected stock-outs.
+	measure 'Profile Lost Revenue' = SUM ( item_store_profile[est_lost_revenue_usd] )
+		formatString: \$#,0
+		displayFolder: Inventory
+		lineageTag: f18ead8c-3538-4c13-8d64-c08e5f30e596
+
+	/// Share of the total estimated stock-out loss.
+	measure 'Lost Share %' = DIVIDE ( [Profile Lost Revenue], CALCULATE ( [Profile Lost Revenue], ALL ( item_store_profile ) ) )
+		formatString: 0.0%
+		displayFolder: Inventory
+		lineageTag: 2bfd1d5b-adab-402a-b315-39c4bb544306
+
+	/// For fast movers only: 1 minus stock-out days over days on shelf.
+	measure 'On-Shelf Availability %' =
+			1
+			    - DIVIDE (
+			        CALCULATE ( SUM ( item_store_profile[stockout_days] ), item_store_profile[is_fast_mover] ),
+			        CALCULATE ( SUM ( item_store_profile[days_on_shelf] ), item_store_profile[is_fast_mover] )
+			    )
+		formatString: 0.0%
+		displayFolder: Inventory
+		lineageTag: 8b93a945-9230-4fea-bbc8-b78c6ab97ad6
+
+	/// Share of the estimated loss on item-stores with two or more stock-outs.
+	measure 'Repeat Stock-out Loss %' = DIVIDE ( CALCULATE ( [Profile Lost Revenue], item_store_profile[stockout_runs] >= 2 ), [Profile Lost Revenue] )
+		formatString: 0.0%
+		displayFolder: Inventory
+		lineageTag: 7c74e204-2460-4889-ba94-4a26b5a2f3e0
+
+	/// Item-stores with two or more suspected stock-outs.
+	measure 'Repeat Stock-out Item-Stores' = CALCULATE ( [Item-Stores], item_store_profile[stockout_runs] >= 2 )
+		formatString: #,0
+		displayFolder: Inventory
+		lineageTag: 7113c04b-285b-4106-b72a-b9e6aa473c5c
+
+	/// Share of all item-stores, ignoring every filter on item_store_profile.
+	measure 'Item-Store Share %' = DIVIDE ( [Item-Stores], CALCULATE ( [Item-Stores], ALL ( item_store_profile ) ) )
+		formatString: 0.0%
+		displayFolder: Inventory
+		lineageTag: 52ab9ac9-9cc9-4633-a996-22a7b8e7f1c2
+
+	/// Rank of the item-store by estimated stock-out loss among the item-stores in the current selection (1 = largest). Blank when there is no loss.
+	measure 'Loss Rank' =
+			IF (
+			    [Profile Lost Revenue] > 0,
+			    RANKX ( ALLSELECTED ( item_store_profile ), [Profile Lost Revenue], , DESC, SKIP )
+			)
+		formatString: 0
+		displayFolder: Inventory
+		lineageTag: aa966ebc-b7b3-4b40-b639-2ad922617bda
+
+	column item_id
+		dataType: string
+		lineageTag: b8166457-7fa7-4130-96a1-9b884edfd2dd
+		summarizeBy: none
+		sourceColumn: item_id
+
+	column store_id
+		dataType: string
+		lineageTag: 05a8cd09-9c33-45b0-8ff6-e8434a89e152
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column days_on_shelf
+		dataType: int64
+		formatString: #,0
+		lineageTag: 30fa4843-8ae7-4532-9799-838484d0805f
+		summarizeBy: sum
+		sourceColumn: days_on_shelf
+
+	column selling_days
+		dataType: int64
+		formatString: #,0
+		lineageTag: d186e5a3-5ae4-42a3-ad17-c0f5b9234138
+		summarizeBy: sum
+		sourceColumn: selling_days
+
+	column units_52w
+		dataType: int64
+		formatString: #,0
+		lineageTag: af9393ad-63ae-4710-875a-726af923e2ca
+		summarizeBy: sum
+		sourceColumn: units_52w
+
+	column revenue_52w_usd
+		dataType: double
+		formatString: \$#,0
+		lineageTag: 06430e44-216f-429b-9a52-fcce8a558ef5
+		summarizeBy: sum
+		sourceColumn: revenue_52w_usd
+
+	column avg_price_usd
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: b6a7012c-9464-477b-96b4-43b914be9f57
+		summarizeBy: none
+		sourceColumn: avg_price_usd
+
+	column mean_daily_units
+		dataType: double
+		formatString: #,0.00
+		lineageTag: db22f2e0-99c8-4748-92ef-6778bc691a44
+		summarizeBy: none
+		sourceColumn: mean_daily_units
+
+	column std_daily_units
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 3f88f1c0-b953-4c6d-988a-80338d11ef49
+		summarizeBy: none
+		sourceColumn: std_daily_units
+
+	column weekly_cv
+		dataType: double
+		formatString: 0.00
+		lineageTag: bebbb5cc-4676-4b43-97d5-f031dfd72170
+		summarizeBy: none
+		sourceColumn: weekly_cv
+
+	column cum_revenue_share
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 49107635-7f16-4130-ba6d-a7f55edf7d7d
+		summarizeBy: none
+		sourceColumn: cum_revenue_share
+
+	/// A: items that make the first 80% of revenue, B: next 15%, C: last 5%.
+	column abc_class
+		dataType: string
+		lineageTag: 5d20c774-7d6d-417f-a572-b9b50c1e69df
+		summarizeBy: none
+		sourceColumn: abc_class
+
+	/// Variability of weekly units (coefficient of variation): X up to 0.5, Y up to 1.0, Z above.
+	column xyz_class
+		dataType: string
+		lineageTag: 2bd3cc03-1596-48cd-97a1-e8940f2d5ef5
+		summarizeBy: none
+		sourceColumn: xyz_class
+
+	column abc_xyz
+		dataType: string
+		lineageTag: bbd54641-f1cc-48b1-a861-cc3a3f5b44a8
+		summarizeBy: none
+		sourceColumn: abc_xyz
+
+	/// Average demand interval: days on shelf per day with sales.
+	column adi
+		dataType: double
+		formatString: 0.00
+		lineageTag: 3a718450-b50f-4ea7-ad9d-7bacaa6e4040
+		summarizeBy: none
+		sourceColumn: adi
+
+	/// Squared coefficient of variation of units on days with sales.
+	column cv2
+		dataType: double
+		formatString: 0.00
+		lineageTag: aaabd18e-8ef4-44e4-85a0-a45dc7169d01
+		summarizeBy: none
+		sourceColumn: cv2
+
+	/// Syntetos-Boylan class from ADI (cut 1.32) and CV2 (cut 0.49): Smooth, Erratic, Intermittent, Lumpy, or No sales.
+	column demand_class
+		dataType: string
+		lineageTag: 4de2ad9f-3639-40cb-bbb5-ceffd25850a0
+		summarizeBy: none
+		sourceColumn: demand_class
+
+	/// Two or more units a day on average; only these items are checked for stock-outs.
+	column is_fast_mover
+		dataType: boolean
+		lineageTag: 5cbdb2d4-4ccc-44d8-acdf-5fdc2207d5a7
+		summarizeBy: none
+		sourceColumn: is_fast_mover
+
+	column stockout_runs
+		dataType: int64
+		formatString: #,0
+		lineageTag: 0cca5318-d794-465d-b363-3d37839002bb
+		summarizeBy: sum
+		sourceColumn: stockout_runs
+
+	column stockout_days
+		dataType: int64
+		formatString: #,0
+		lineageTag: 76d1bf78-d0d2-4002-a8f8-c1353a8a0aa3
+		summarizeBy: sum
+		sourceColumn: stockout_days
+
+	column est_lost_units
+		dataType: double
+		formatString: #,0
+		lineageTag: c97db892-bfe1-4717-a99e-63eb36e0bcc6
+		summarizeBy: sum
+		sourceColumn: est_lost_units
+
+	column est_lost_revenue_usd
+		dataType: double
+		formatString: \$#,0
+		lineageTag: 6efd08a7-72f7-4e73-ad9d-0d45fb8cd382
+		summarizeBy: sum
+		sourceColumn: est_lost_revenue_usd
+
+	column last_stockout_end
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 8bd4c3f6-5254-4f87-8caf-2ca8864c9ab2
+		summarizeBy: none
+		sourceColumn: last_stockout_end
+
+	partition item_store_profile = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document ( File.Contents ( DataFolder & "item_store_profile.parquet" ) ),
+				    Typed = Table.TransformColumnTypes ( Source, {
+				        {"item_id", type text}, {"store_id", type text},
+				        {"days_on_shelf", Int64.Type}, {"selling_days", Int64.Type}, {"units_52w", Int64.Type},
+				        {"revenue_52w_usd", type number}, {"avg_price_usd", type number},
+				        {"mean_daily_units", type number}, {"std_daily_units", type number},
+				        {"weekly_cv", type number}, {"cum_revenue_share", type number},
+				        {"abc_class", type text}, {"xyz_class", type text}, {"abc_xyz", type text},
+				        {"adi", type number}, {"cv2", type number}, {"demand_class", type text},
+				        {"is_fast_mover", type logical},
+				        {"stockout_runs", Int64.Type}, {"stockout_days", Int64.Type},
+				        {"est_lost_units", type number}, {"est_lost_revenue_usd", type number},
+				        {"last_stockout_end", type date} } )
+				in
+				    Typed
+

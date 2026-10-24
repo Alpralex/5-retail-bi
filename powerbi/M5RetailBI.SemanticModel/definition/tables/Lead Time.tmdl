@@ -1,0 +1,20 @@
+/// What-if parameter: replenishment lead time in days.
+table 'Lead Time'
+	lineageTag: 4ddfd413-995a-428f-8ce4-528f50bbc652
+
+	column 'Lead Time'
+		formatString: 0
+		lineageTag: ed8d94e8-a4c3-4661-b42e-03f54aca7d3b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Lead Time]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+	partition 'Lead Time' = calculated
+		mode: import
+		source = SELECTCOLUMNS ( GENERATESERIES ( 1, 28, 1 ), "Lead Time", [Value] )
+

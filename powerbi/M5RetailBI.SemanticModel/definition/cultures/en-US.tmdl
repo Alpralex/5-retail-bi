@@ -88,6 +88,111 @@ cultureInfo en-US
 			          }
 			        }
 			      ]
+			    },
+			    "stockout_runs.item_id": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "stockout_runs",
+			          "ConceptualProperty": "item_id"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Item": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "stockout_runs.store_id": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "stockout_runs",
+			          "ConceptualProperty": "store_id"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Store": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "stockout_runs.run_start": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "stockout_runs",
+			          "ConceptualProperty": "run_start"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Start": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "stockout_runs.run_days": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "stockout_runs",
+			          "ConceptualProperty": "run_days"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Days": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "stockout_runs.est__lost_revenue": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "stockout_runs",
+			          "ConceptualProperty": "Est. Lost Revenue"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Est. lost revenue": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
 			    }
 			  }
 			}
