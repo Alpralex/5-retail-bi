@@ -26,6 +26,13 @@ queries = {
         select item_id, store_id, run_start, run_end, run_days,
                est_lost_units, est_lost_revenue_usd
         from mart_zero_sales_runs""",
+    "item_store_profile": """
+        select item_id, store_id, days_on_shelf, selling_days, units_52w, revenue_52w_usd,
+               avg_price_usd, mean_daily_units, std_daily_units, weekly_cv, cum_revenue_share,
+               abc_class, xyz_class, abc_class || xyz_class as abc_xyz, adi, cv2, demand_class,
+               is_fast_mover, stockout_runs, stockout_days, est_lost_units, est_lost_revenue_usd,
+               last_stockout_end
+        from mart_item_store_profile""",
 }
 for name, sql in queries.items():
     con.execute(f"copy ({sql}) to '{OUT}/{name}.parquet' (format parquet, compression zstd)")
