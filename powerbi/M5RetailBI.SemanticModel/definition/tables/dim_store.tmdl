@@ -1,0 +1,25 @@
+table dim_store
+
+	column store_id
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column state_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: state_id
+
+	column state_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: state_name
+
+	partition dim_store = m
+		mode: import
+		source =
+				let
+					Source = Parquet.Document ( File.Contents ( DataFolder & "dim_store.parquet" ) )
+				in
+					Source

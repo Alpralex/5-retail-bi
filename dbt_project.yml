@@ -1,0 +1,18 @@
+name: m5_retail_bi
+version: "1.0.0"
+config-version: 2
+profile: m5_retail_bi
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+
+vars:
+  raw_path: "{{ env_var('M5_RAW_PATH', 'data/raw') }}"
+
+models:
+  m5_retail_bi:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

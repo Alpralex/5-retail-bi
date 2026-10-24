@@ -1,0 +1,20 @@
+table dim_item
+
+	column item_id
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: item_id
+
+	column dept_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dept_id
+
+	partition dim_item = m
+		mode: import
+		source =
+				let
+					Source = Parquet.Document ( File.Contents ( DataFolder & "dim_item.parquet" ) )
+				in
+					Source

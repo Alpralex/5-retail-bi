@@ -1,0 +1,58 @@
+table stockout_runs
+
+	measure 'Est. Lost Revenue' = SUM ( stockout_runs[est_lost_revenue_usd] )
+		formatString: \$#,0
+
+	measure 'Stock-out Runs' = COUNTROWS ( stockout_runs )
+		formatString: #,0
+
+	measure 'Lost % of Revenue' = DIVIDE ( [Est. Lost Revenue], [Revenue Last 52 Weeks] )
+		formatString: 0.0%
+
+	column item_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: item_id
+
+	column store_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column run_start
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: run_start
+
+	column run_end
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: run_end
+
+	column run_days
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: run_days
+
+	column est_lost_units
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: est_lost_units
+
+	column est_lost_revenue_usd
+		dataType: double
+		formatString: \$#,0
+		summarizeBy: sum
+		sourceColumn: est_lost_revenue_usd
+
+	partition stockout_runs = m
+		mode: import
+		source =
+				let
+					Source = Parquet.Document ( File.Contents ( DataFolder & "stockout_runs.parquet" ) )
+				in
+					Source

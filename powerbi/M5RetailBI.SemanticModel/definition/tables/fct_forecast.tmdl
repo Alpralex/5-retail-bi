@@ -1,0 +1,62 @@
+table fct_forecast
+
+	measure 'Actual Units' = SUM ( fct_forecast[actual_units] )
+		formatString: #,0
+
+	measure 'Forecast Units' = SUM ( fct_forecast[forecast_units] )
+		formatString: #,0
+
+	measure 'Forecast Bias %' = DIVIDE ( [Forecast Units] - [Actual Units], [Actual Units] )
+		formatString: +0.0%;-0.0%;0.0%
+
+	measure 'WAPE Item-Day %' =
+			DIVIDE (
+				SUMX ( fct_forecast, ABS ( fct_forecast[forecast_units] - fct_forecast[actual_units] ) ),
+				[Actual Units]
+			)
+		formatString: 0.0%
+
+	measure 'WAPE Store-Day %' =
+			VAR StoreDays =
+				SUMMARIZE ( fct_forecast, fct_forecast[date_day], fct_forecast[store_id] )
+			VAR AbsError =
+				SUMX ( StoreDays, ABS ( CALCULATE ( [Forecast Units] - [Actual Units] ) ) )
+			RETURN
+				DIVIDE ( AbsError, [Actual Units] )
+		formatString: 0.0%
+
+	column date_day
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: date_day
+
+	column store_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column item_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: item_id
+
+	column actual_units
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: actual_units
+
+	column forecast_units
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: forecast_units
+
+	partition fct_forecast = m
+		mode: import
+		source =
+				let
+					Source = Parquet.Document ( File.Contents ( DataFolder & "fct_forecast.parquet" ) )
+				in
+					Source

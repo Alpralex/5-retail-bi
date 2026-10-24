@@ -1,0 +1,3 @@
+version: 2
+# Raw M5 files are read straight from CSV by the staging models (see stg_*.sql).
+# Source: M5 Forecasting competition (Walmart, 2020), mirrored by Nixtla.

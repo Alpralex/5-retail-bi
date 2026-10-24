@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: Calendar with Walmart weeks, months and events.
+    columns:
+      - name: day_number
+        tests: [unique, not_null]
+      - name: date_day
+        tests: [unique, not_null]
+
+  - name: dim_store
+    description: The 10 stores in California, Texas and Wisconsin.
+    columns:
+      - name: store_id
+        tests: [unique, not_null]
+      - name: state_id
+        tests:
+          - accepted_values:
+              values: ['CA', 'TX', 'WI']
+
+  - name: dim_item
+    description: 3,049 items in 3 categories and 7 departments.
+    columns:
+      - name: item_id
+        tests: [unique, not_null]
+      - name: category_id
+        tests:
+          - accepted_values:
+              values: ['FOODS', 'HOBBIES', 'HOUSEHOLD']
+
+  - name: fct_sales_daily
+    description: Daily units and revenue per item and store, from the day the item has a shelf price.
+    columns:
+      - name: item_id
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_item'), field: item_id}
+      - name: store_id
+        tests:
+          - relationships: {to: ref('dim_store'), field: store_id}
+      - name: units
+        tests: [not_null]
+
+  - name: fct_forecast_eval
+    description: Winning M5 forecast against actual sales for the 28 evaluation days.
+    tests:
+      - row_count_equals: {expected: 853720}
+    columns:
+      - name: forecast_units
+        tests: [not_null]
+
+  - name: mart_forecast_accuracy
+    description: WAPE and bias by store and category.
+    columns:
+      - name: wape
+        tests: [not_null]

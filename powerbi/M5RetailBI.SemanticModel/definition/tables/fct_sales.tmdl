@@ -1,0 +1,64 @@
+table fct_sales
+
+	measure 'Revenue' = SUM ( fct_sales[revenue_usd] )
+		formatString: \$#,0
+
+	measure 'Units' = SUM ( fct_sales[units] )
+		formatString: #,0
+
+	measure 'Revenue LY' = CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( dim_date[date_day] ) )
+		formatString: \$#,0
+
+	measure 'Revenue YoY %' = DIVIDE ( [Revenue] - [Revenue LY], [Revenue LY] )
+		formatString: 0.0%
+
+	measure 'Revenue Last 52 Weeks' =
+			VAR LastDay = CALCULATE ( MAX ( fct_sales[date_day] ), ALL ( dim_date ) )
+			RETURN
+				CALCULATE ( [Revenue], DATESINPERIOD ( dim_date[date_day], LastDay, -364, DAY ) )
+		formatString: \$#,0
+
+	measure 'Revenue Prior 52 Weeks' =
+			VAR LastDay = CALCULATE ( MAX ( fct_sales[date_day] ), ALL ( dim_date ) ) - 364
+			RETURN
+				CALCULATE ( [Revenue], DATESINPERIOD ( dim_date[date_day], LastDay, -364, DAY ) )
+		formatString: \$#,0
+
+	measure 'Revenue 52w YoY %' = DIVIDE ( [Revenue Last 52 Weeks] - [Revenue Prior 52 Weeks], [Revenue Prior 52 Weeks] )
+		formatString: 0.0%
+
+	column date_day
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: date_day
+
+	column store_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column dept_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dept_id
+
+	column units
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units
+
+	column revenue_usd
+		dataType: double
+		formatString: \$#,0
+		summarizeBy: sum
+		sourceColumn: revenue_usd
+
+	partition fct_sales = m
+		mode: import
+		source =
+				let
+					Source = Parquet.Document ( File.Contents ( DataFolder & "fct_sales.parquet" ) )
+				in
+					Source

@@ -1,0 +1,7 @@
+m5_retail_bi:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('M5_DB_PATH', 'data/m5.duckdb') }}"
+      threads: 4

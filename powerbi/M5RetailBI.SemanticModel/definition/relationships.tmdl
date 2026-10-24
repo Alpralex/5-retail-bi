@@ -1,0 +1,39 @@
+relationship fct_sales_date
+	fromColumn: fct_sales.date_day
+	toColumn: dim_date.date_day
+
+relationship fct_sales_store
+	fromColumn: fct_sales.store_id
+	toColumn: dim_store.store_id
+
+relationship fct_sales_dept
+	fromColumn: fct_sales.dept_id
+	toColumn: dim_dept.dept_id
+
+relationship fct_forecast_date
+	fromColumn: fct_forecast.date_day
+	toColumn: dim_date.date_day
+
+relationship fct_forecast_store
+	fromColumn: fct_forecast.store_id
+	toColumn: dim_store.store_id
+
+relationship fct_forecast_item
+	fromColumn: fct_forecast.item_id
+	toColumn: dim_item.item_id
+
+relationship dim_item_dept
+	fromColumn: dim_item.dept_id
+	toColumn: dim_dept.dept_id
+
+relationship stockout_runs_item
+	fromColumn: stockout_runs.item_id
+	toColumn: dim_item.item_id
+
+relationship stockout_runs_store
+	fromColumn: stockout_runs.store_id
+	toColumn: dim_store.store_id
+
+relationship stockout_runs_date
+	fromColumn: stockout_runs.run_start
+	toColumn: dim_date.date_day
