@@ -1,18 +1,22 @@
 table dim_store
+	lineageTag: d53dff8d-122e-4580-aedc-ed6bdf82164c
 
 	column store_id
 		dataType: string
 		isKey
+		lineageTag: df62feab-4fa5-4b8b-a919-958012807fe0
 		summarizeBy: none
 		sourceColumn: store_id
 
 	column state_id
 		dataType: string
+		lineageTag: d17c7d34-7bef-49e2-b64c-b8df2dc8d062
 		summarizeBy: none
 		sourceColumn: state_id
 
 	column state_name
 		dataType: string
+		lineageTag: b7431c96-af74-4cc6-83f4-76f89410655a
 		summarizeBy: none
 		sourceColumn: state_name
 
@@ -23,3 +27,4 @@ table dim_store
 					Source = Parquet.Document ( File.Contents ( DataFolder & "dim_store.parquet" ) )
 				in
 					Source
+

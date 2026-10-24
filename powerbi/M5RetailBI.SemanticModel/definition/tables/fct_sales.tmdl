@@ -1,57 +1,72 @@
 table fct_sales
+	lineageTag: 9b6eedb4-08dd-4d94-9bf4-f41a06349e0f
 
-	measure 'Revenue' = SUM ( fct_sales[revenue_usd] )
+	measure Revenue = SUM ( fct_sales[revenue_usd] )
 		formatString: \$#,0
+		lineageTag: 56e5d687-f1ca-4e2e-a951-2473ba411fb3
 
 	measure 'Units Sold' = SUM ( fct_sales[units] )
 		formatString: #,0
+		lineageTag: 434612e7-ede8-4e8b-8734-f29dcf033abc
 
 	measure 'Revenue LY' = CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( dim_date[date_day] ) )
 		formatString: \$#,0
+		lineageTag: 223c88f4-ae41-40be-a366-df02af20f614
 
 	measure 'Revenue YoY %' = DIVIDE ( [Revenue] - [Revenue LY], [Revenue LY] )
 		formatString: 0.0%
+		lineageTag: c6c11d5e-1db2-4eae-b9fc-9b4821e7fcc4
 
 	measure 'Revenue Last 52 Weeks' =
 			VAR LastDay = CALCULATE ( MAX ( fct_sales[date_day] ), ALL ( dim_date ) )
 			RETURN
 				CALCULATE ( [Revenue], DATESINPERIOD ( dim_date[date_day], LastDay, -364, DAY ) )
 		formatString: \$#,0
+		lineageTag: 0c6086e4-b308-4e65-ab96-85e3a5670ba9
 
 	measure 'Revenue Prior 52 Weeks' =
 			VAR LastDay = CALCULATE ( MAX ( fct_sales[date_day] ), ALL ( dim_date ) ) - 364
 			RETURN
 				CALCULATE ( [Revenue], DATESINPERIOD ( dim_date[date_day], LastDay, -364, DAY ) )
 		formatString: \$#,0
+		lineageTag: 0185d9dd-d1d2-4aaf-8a2d-df7df27e1d8a
 
 	measure 'Revenue 52w YoY %' = DIVIDE ( [Revenue Last 52 Weeks] - [Revenue Prior 52 Weeks], [Revenue Prior 52 Weeks] )
 		formatString: 0.0%
+		lineageTag: 87c7db94-7e18-4e27-9d51-08eba163fbda
 
 	column date_day
 		dataType: dateTime
 		formatString: yyyy-mm-dd
+		lineageTag: adcd6195-5629-44d6-b64f-6301674570ce
 		summarizeBy: none
 		sourceColumn: date_day
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column store_id
 		dataType: string
+		lineageTag: 70cd414e-9026-4bbe-b5b8-d3cc20e8f10b
 		summarizeBy: none
 		sourceColumn: store_id
 
 	column dept_id
 		dataType: string
+		lineageTag: 4e06df97-1957-4155-8e5f-67a94b4ecbf8
 		summarizeBy: none
 		sourceColumn: dept_id
 
 	column units
 		dataType: int64
 		formatString: #,0
+		lineageTag: d714966c-0398-427d-8be1-e4f6f66d9171
 		summarizeBy: sum
 		sourceColumn: units
 
 	column revenue_usd
 		dataType: double
 		formatString: \$#,0
+		lineageTag: e373109b-d016-401c-9b2c-6fd47df9ece0
 		summarizeBy: sum
 		sourceColumn: revenue_usd
 
@@ -62,3 +77,4 @@ table fct_sales
 					Source = Parquet.Document ( File.Contents ( DataFolder & "fct_sales.parquet" ) )
 				in
 					Source
+

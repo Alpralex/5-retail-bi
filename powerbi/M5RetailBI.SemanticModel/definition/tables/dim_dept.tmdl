@@ -1,13 +1,16 @@
 table dim_dept
+	lineageTag: 33169e40-5a46-4a51-8b09-a7bb70cddbbe
 
 	column dept_id
 		dataType: string
 		isKey
+		lineageTag: e7d7f901-ec90-4a37-90ed-c83d8ed16f13
 		summarizeBy: none
 		sourceColumn: dept_id
 
 	column category_name
 		dataType: string
+		lineageTag: 6d11d789-4f71-403e-aa7e-e2cd0240f6b5
 		summarizeBy: none
 		sourceColumn: category_name
 
@@ -18,3 +21,4 @@ table dim_dept
 					Source = Parquet.Document ( File.Contents ( DataFolder & "dim_dept.parquet" ) )
 				in
 					Source
+

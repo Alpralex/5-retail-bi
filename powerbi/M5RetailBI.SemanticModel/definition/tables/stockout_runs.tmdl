@@ -1,51 +1,71 @@
 table stockout_runs
+	lineageTag: 093766c5-b2e4-4577-a146-4df6d66c4d94
 
 	measure 'Est. Lost Revenue' = SUM ( stockout_runs[est_lost_revenue_usd] )
 		formatString: \$#,0
+		lineageTag: cd39925d-915e-49b5-828f-939164e1a704
 
 	measure 'Stock-out Runs' = COUNTROWS ( stockout_runs )
 		formatString: #,0
+		lineageTag: 514c5d72-eaac-422d-b800-28dfce85276e
 
 	measure 'Lost % of Revenue' = DIVIDE ( [Est. Lost Revenue], [Revenue Last 52 Weeks] )
 		formatString: 0.0%
+		lineageTag: 7af38471-d73f-4a60-8ce5-46a65578e91a
 
 	column item_id
 		dataType: string
+		lineageTag: 3dc3858a-bbb6-43fa-ae5f-eaf5ba750037
 		summarizeBy: none
 		sourceColumn: item_id
 
 	column store_id
 		dataType: string
+		lineageTag: 6ab0fa6d-b161-4c30-919e-54635d95dada
 		summarizeBy: none
 		sourceColumn: store_id
 
 	column run_start
 		dataType: dateTime
 		formatString: yyyy-mm-dd
+		lineageTag: f3f98222-c2d6-48cd-877c-b17e6626964d
 		summarizeBy: none
 		sourceColumn: run_start
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column run_end
 		dataType: dateTime
 		formatString: yyyy-mm-dd
+		lineageTag: 25c80a91-0da1-40e9-a569-49a8f4bccdb7
 		summarizeBy: none
 		sourceColumn: run_end
+
+		variation Variação
+			isDefault
+			relationship: 57888dad-4905-4824-9665-f5297e39927a
+			defaultHierarchy: LocalDateTable_a8c8eb0f-566d-4ea0-bc16-c548467f1fca.'Date Hierarchy'
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column run_days
 		dataType: int64
 		formatString: 0
+		lineageTag: b935a7a0-fcf1-4d89-aaa8-66bc77782ec2
 		summarizeBy: sum
 		sourceColumn: run_days
 
 	column est_lost_units
 		dataType: double
 		formatString: #,0
+		lineageTag: 29fe023e-1c20-47d4-bf4c-6bf35dc53d97
 		summarizeBy: sum
 		sourceColumn: est_lost_units
 
 	column est_lost_revenue_usd
 		dataType: double
 		formatString: \$#,0
+		lineageTag: 8df829fd-f8fd-4c14-98c1-9c4c0902162f
 		summarizeBy: sum
 		sourceColumn: est_lost_revenue_usd
 
@@ -56,3 +76,4 @@ table stockout_runs
 					Source = Parquet.Document ( File.Contents ( DataFolder & "stockout_runs.parquet" ) )
 				in
 					Source
+

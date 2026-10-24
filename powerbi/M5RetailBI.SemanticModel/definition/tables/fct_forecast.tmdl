@@ -1,13 +1,17 @@
 table fct_forecast
+	lineageTag: 4858b7ea-4909-42a5-ad14-b5c6d62f96e5
 
 	measure 'Actual Units' = SUM ( fct_forecast[actual_units] )
 		formatString: #,0
+		lineageTag: 1ce34e84-dcba-4944-b501-b9c61f23c8bb
 
 	measure 'Forecast Units' = SUM ( fct_forecast[forecast_units] )
 		formatString: #,0
+		lineageTag: 0f1ced43-6dc7-48c7-aee7-974cac2599b8
 
 	measure 'Forecast Bias %' = DIVIDE ( [Forecast Units] - [Actual Units], [Actual Units] )
 		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 9f7a7f96-0416-4c0f-b5cf-f788eb754ac5
 
 	measure 'WAPE Item-Day %' =
 			DIVIDE (
@@ -15,6 +19,7 @@ table fct_forecast
 				[Actual Units]
 			)
 		formatString: 0.0%
+		lineageTag: 3fa1547e-b51f-4314-8d97-f37821a1c5f8
 
 	measure 'WAPE Store-Day %' =
 			VAR StoreDays =
@@ -24,32 +29,40 @@ table fct_forecast
 			RETURN
 				DIVIDE ( AbsError, [Actual Units] )
 		formatString: 0.0%
+		lineageTag: 76c77682-fa26-44cd-95ad-bd454a467052
 
 	column date_day
 		dataType: dateTime
 		formatString: yyyy-mm-dd
+		lineageTag: 1e54336c-3bd7-4f5d-a066-6e1a52201305
 		summarizeBy: none
 		sourceColumn: date_day
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column store_id
 		dataType: string
+		lineageTag: 9b5e0c6a-8681-44fa-abf0-cfb520ceb99a
 		summarizeBy: none
 		sourceColumn: store_id
 
 	column item_id
 		dataType: string
+		lineageTag: c246b978-6392-471f-beb9-5ed0fe6a5f4f
 		summarizeBy: none
 		sourceColumn: item_id
 
 	column actual_units
 		dataType: int64
 		formatString: #,0
+		lineageTag: 43bb0d2c-e64a-425e-a55c-cd834b8d3a2e
 		summarizeBy: sum
 		sourceColumn: actual_units
 
 	column forecast_units
 		dataType: double
 		formatString: #,0
+		lineageTag: ac3dc312-3166-4394-b405-c388147407b9
 		summarizeBy: sum
 		sourceColumn: forecast_units
 
@@ -60,3 +73,4 @@ table fct_forecast
 					Source = Parquet.Document ( File.Contents ( DataFolder & "fct_forecast.parquet" ) )
 				in
 					Source
+

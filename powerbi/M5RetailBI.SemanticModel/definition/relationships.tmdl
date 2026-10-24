@@ -37,3 +37,9 @@ relationship stockout_runs_store
 relationship stockout_runs_date
 	fromColumn: stockout_runs.run_start
 	toColumn: dim_date.date_day
+
+relationship 57888dad-4905-4824-9665-f5297e39927a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: stockout_runs.run_end
+	toColumn: LocalDateTable_a8c8eb0f-566d-4ea0-bc16-c548467f1fca.Date
+

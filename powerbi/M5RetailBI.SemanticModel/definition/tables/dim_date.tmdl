@@ -1,49 +1,64 @@
 table dim_date
+	lineageTag: 422b942c-f136-429a-baa1-ac74b6fe99b4
 	dataCategory: Time
 
 	column date_day
 		dataType: dateTime
 		isKey
 		formatString: yyyy-mm-dd
+		lineageTag: ed9b35b5-3ba7-4899-b490-c86a9decbdeb
 		summarizeBy: none
 		sourceColumn: date_day
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column week_start
 		dataType: dateTime
 		formatString: yyyy-mm-dd
+		lineageTag: a57209f8-7294-4630-aa0b-a46647c6c7e1
 		summarizeBy: none
 		sourceColumn: week_start
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column month_start
 		dataType: dateTime
 		formatString: mmm yyyy
+		lineageTag: ba2931d4-36c9-48cf-82f1-361452e7334d
 		summarizeBy: none
 		sourceColumn: month_start
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column year_number
 		dataType: int64
 		formatString: 0
+		lineageTag: 3d8c147c-109e-4363-9ecd-c6b934fc6f87
 		summarizeBy: none
 		sourceColumn: year_number
 
 	column month_number
 		dataType: int64
 		formatString: 0
+		lineageTag: b6197aea-6de8-411b-8bd4-0fa6956c58c2
 		summarizeBy: none
 		sourceColumn: month_number
 
 	column weekday_name
 		dataType: string
+		lineageTag: a20579fe-896b-40b6-a1fc-c36eb5437cf8
 		summarizeBy: none
 		sourceColumn: weekday_name
 
 	column event_name
 		dataType: string
+		lineageTag: 660af414-05e6-40dd-826f-035b65c56ac5
 		summarizeBy: none
 		sourceColumn: event_name
 
 	column event_type
 		dataType: string
+		lineageTag: 3badf328-d629-45e4-80d4-7c66d5508ad2
 		summarizeBy: none
 		sourceColumn: event_type
 
@@ -54,3 +69,4 @@ table dim_date
 					Source = Parquet.Document ( File.Contents ( DataFolder & "dim_date.parquet" ) )
 				in
 					Source
+

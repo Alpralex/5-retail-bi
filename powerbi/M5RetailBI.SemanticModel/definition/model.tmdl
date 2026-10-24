@@ -6,7 +6,11 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-	annotation PBI_QueryOrder = ["DataFolder","dim_date","dim_store","dim_dept","dim_item","fct_sales","fct_forecast","stockout_runs"]
+annotation PBI_QueryOrder = ["DataFolder","dim_date","dim_store","dim_dept","dim_item","fct_sales","fct_forecast","stockout_runs"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
 
 ref table dim_date
 ref table dim_store
@@ -15,3 +19,6 @@ ref table dim_item
 ref table fct_sales
 ref table fct_forecast
 ref table stockout_runs
+ref table DateTableTemplate_a0435f40-c6db-4a98-a441-d57c251c7818
+ref table LocalDateTable_a8c8eb0f-566d-4ea0-bc16-c548467f1fca
+
