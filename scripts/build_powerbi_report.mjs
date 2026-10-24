@@ -55,7 +55,11 @@ const F = {
   soStore: col("stockout_runs", "store_id"),
   soStart: col("stockout_runs", "run_start"),
   soDays: col("stockout_runs", "run_days"),
+  serviceLevel: col("Service Level", "Service Level"),
+  leadTime: col("Lead Time", "Lead Time"),
 };
+const isp = (name) => col("item_store_profile", name);
+const ispm = (name) => meas("item_store_profile", name);
 
 // ---------- visual builders ----------
 let z = 0;
@@ -83,20 +87,68 @@ function chartVcos(title, alt, subtitle) {
   return v;
 }
 
-function textbox(page, key, pos, text, style) {
+function textbox(page, key, pos, text, style, vcos) {
+  const runs = Array.isArray(text) ? text : [{ value: text, textStyle: style }];
   return container(page, key, pos, {
     visualType: "textbox",
     objects: {
       general: [{
         properties: {
-          paragraphs: [{ textRuns: [{ value: text, textStyle: style }], horizontalTextAlignment: "left" }],
+          paragraphs: [{ textRuns: runs, horizontalTextAlignment: "left" }],
+        },
+      }],
+    },
+    visualContainerObjects: vcos || {
+      background: [{ properties: { show: bool(false) } }],
+      border: [{ properties: { show: bool(false) } }],
+      padding: [vcoPadding(0)],
+    },
+  });
+}
+
+// Callout box for caveats: white card with an alert-coloured border.
+function note(page, key, pos, lead, body) {
+  return textbox(page, key, pos, [
+    { value: lead + " ", textStyle: { fontFamily: "Segoe UI Semibold", fontSize: "13px", color: C.alert } },
+    { value: body, textStyle: { fontFamily: "Segoe UI", fontSize: "13px", color: C.text } },
+  ], null, {
+    background: [{ properties: { show: bool(true), color: fill(C.card), transparency: num(0) } }],
+    border: [{ properties: { show: bool(true), color: fill(C.alert), radius: num(6) } }],
+    padding: [vcoPadding(12)],
+  });
+}
+
+// Single-value slider for a what-if parameter, preset to its default value.
+function whatIfSlicer(page, key, pos, field, title, defaultLiteral, alt) {
+  const c = field.Column;
+  return container(page, key, pos, {
+    visualType: "slicer",
+    query: { queryState: { Values: { projections: [proj(field)] } } },
+    objects: {
+      data: [{ properties: { mode: str("Single") } }],
+      header: [{ properties: { show: bool(true), text: str(title) } }],
+      general: [{
+        properties: {
+          filter: {
+            filter: {
+              Version: 2,
+              From: [{ Name: "p", Entity: c.Expression.SourceRef.Entity, Type: 0 }],
+              Where: [{
+                Condition: {
+                  In: {
+                    Expressions: [{ Column: { Expression: { SourceRef: { Source: "p" } }, Property: c.Property } }],
+                    Values: [[{ Literal: { Value: defaultLiteral } }]],
+                  },
+                },
+              }],
+            },
+          },
         },
       }],
     },
     visualContainerObjects: {
-      background: [{ properties: { show: bool(false) } }],
-      border: [{ properties: { show: bool(false) } }],
-      padding: [vcoPadding(0)],
+      general: [{ properties: { altText: str(alt) } }],
+      padding: [vcoPadding(8)],
     },
   });
 }
@@ -105,7 +157,7 @@ function header(page, title, subtitle) {
   return [
     textbox(page, "title", { x: 16, y: 16, w: 680, h: 40 }, title,
       { fontFamily: "Segoe UI Semibold", fontSize: "22px", color: C.text }),
-    textbox(page, "subtitle", { x: 16, y: 60, w: 680, h: 28 }, subtitle,
+    textbox(page, "subtitle", { x: 16, y: 60, w: 680, h: 48 }, subtitle,
       { fontFamily: "Segoe UI", fontSize: "13px", color: C.muted }),
   ];
 }
@@ -194,7 +246,7 @@ function barChart(page, key, pos, category, value, color, title, alt, opts = {})
       dataPoint,
       labels: [{ properties: { show: bool(true), fontSize: num(10), color: fill(C.text), ...(opts.labelUnits ? { labelDisplayUnits: str(opts.labelUnits) } : {}) } }],
       categoryAxis: [{ properties: { show: bool(true), fontSize: num(10), labelColor: fill(C.muted), showAxisTitle: bool(false) } }],
-      valueAxis: [{ properties: { show: bool(false), gridlineShow: bool(false), showAxisTitle: bool(false) } }],
+      valueAxis: [{ properties: { show: bool(false), gridlineShow: bool(false), showAxisTitle: bool(false), ...(opts.axisStart !== undefined ? { start: num(opts.axisStart) } : {}) } }],
       legend: [{ properties: { show: bool(false) } }],
     },
     visualContainerObjects: chartVcos(title, alt, opts.subtitle),
@@ -436,6 +488,191 @@ function stockoutPage() {
   };
 }
 
+function inventoryPage() {
+  const p = "c3a81f5d2e6b4c7d9e10";
+  z = 0;
+  const named = (field, displayName) => ({ ...proj(field), displayName });
+  const cards = [
+    card(p, "card_ss_value", { x: 16, y: 248, w: 300, h: 88 }, ispm("Safety Stock Value"), "Safety stock value", {
+      units: "1000", precision: 0, alt: "Safety stock for the selected service level and lead time, valued at shelf price.",
+    }),
+    card(p, "card_ss_units", { x: 332, y: 248, w: 300, h: 88 }, ispm("Safety Stock Units"), "Safety stock units", {
+      units: "1000", precision: 0, alt: "Safety stock in units for the selected service level and lead time.",
+    }),
+    card(p, "card_avg_inv", { x: 648, y: 248, w: 300, h: 88 }, ispm("Average Inventory Value"), "Average inventory (safety + cycle)", {
+      units: "1000", precision: 0, alt: "Average inventory value: safety stock plus half of the lead-time demand.",
+    }),
+    card(p, "card_item_stores", { x: 964, y: 248, w: 300, h: 88 }, ispm("Item-Stores"), "Item-stores", {
+      units: "1", alt: "Number of item and store combinations in the selection.",
+    }),
+  ];
+  const shareRef = ref(ispm("Revenue Share %"));
+  const matrix = container(p, "matrix_abc_xyz", { x: 16, y: 352, w: 752, h: 352 }, {
+    visualType: "pivotTable",
+    query: {
+      queryState: {
+        Rows: { projections: [named(isp("abc_class"), "ABC")] },
+        Columns: { projections: [named(isp("xyz_class"), "XYZ")] },
+        Values: {
+          projections: [
+            named(ispm("Revenue Share %"), "Revenue share"),
+            named(ispm("Item-Stores"), "Item-stores"),
+            named(ispm("Safety Stock Value"), "Safety stock"),
+          ],
+        },
+      },
+    },
+    objects: {
+      columnHeaders: [{ properties: { columnAdjustment: str("growToFit"), autoSizeColumnWidth: bool(true) } }],
+      subTotals: [{ properties: { columnSubtotals: bool(false) } }],
+      values: [{
+        properties: {
+          backColor: {
+            solid: {
+              color: {
+                expr: {
+                  FillRule: {
+                    Input: { SelectRef: { ExpressionName: shareRef } },
+                    FillRule: {
+                      linearGradient2: {
+                        min: { color: { Literal: { Value: `'${C.seqMin}'` } } },
+                        max: { color: { Literal: { Value: `'${C.seqMax}'` } } },
+                        nullColoringStrategy: { strategy: { Literal: { Value: "'noColor'" } } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        selector: { data: [{ dataViewWildcard: { matchingOption: 1 } }], metadata: shareRef },
+      }],
+    },
+    visualContainerObjects: chartVcos("Revenue, item count and safety stock by ABC × XYZ class",
+      "Matrix of ABC revenue class by XYZ variability class with revenue share, item-store count and safety stock value; darker blue cells hold more revenue.",
+      "ABC: A = first 80% of revenue. XYZ: X = steady weekly sales, Z = most variable"),
+  });
+  const demand = container(p, "bar_demand_class", { x: 784, y: 352, w: 480, h: 352 }, {
+    visualType: "clusteredBarChart",
+    query: {
+      queryState: {
+        Category: { projections: [named(isp("demand_class"), "Demand class")] },
+        Y: { projections: [named(ispm("Item-Store Share %"), "Share of item-stores"), named(ispm("Revenue Share %"), "Share of revenue")] },
+      },
+      sortDefinition: { sort: [{ field: ispm("Item-Store Share %"), direction: "Descending" }], isDefaultSort: true },
+    },
+    objects: {
+      dataPoint: [
+        { properties: { fill: fill(C.grey) }, selector: { metadata: ref(ispm("Item-Store Share %")) } },
+        { properties: { fill: fill(C.blue) }, selector: { metadata: ref(ispm("Revenue Share %")) } },
+      ],
+      labels: [{ properties: { show: bool(true), fontSize: num(10), color: fill(C.text) } }],
+      categoryAxis: [{ properties: { show: bool(true), fontSize: num(10), labelColor: fill(C.muted), showAxisTitle: bool(false) } }],
+      valueAxis: [{ properties: { show: bool(false), gridlineShow: bool(false), showAxisTitle: bool(false) } }],
+      legend: [{ properties: { show: bool(true), position: str("Top"), fontSize: num(10), labelColor: fill(C.muted) } }],
+    },
+    visualContainerObjects: chartVcos("Item-stores and revenue by demand class",
+      "Clustered bar chart comparing each demand class's share of item-stores with its share of revenue."),
+  });
+  return {
+    name: p, displayName: "Inventory policy",
+    visuals: [
+      ...header(p, "How much safety stock does each item need?",
+        "Safety stock = z × daily demand spread × √lead time, valued at shelf price. Change the service level and lead time."),
+      ...slicers(p),
+      whatIfSlicer(p, "slicer_service_level", { x: 16, y: 136, w: 300, h: 96 }, F.serviceLevel, "Service level", "0.95D",
+        "Service level slider from 90% to 99.5%, set to 95%."),
+      whatIfSlicer(p, "slicer_lead_time", { x: 332, y: 136, w: 300, h: 96 }, F.leadTime, "Lead time (days)", "7L",
+        "Lead time slider from 1 to 28 days, set to 7 days."),
+      note(p, "note_intermittent", { x: 648, y: 136, w: 616, h: 96 }, "Caveat:",
+        "76% of item-stores have intermittent demand. A normal-distribution safety stock overstates their need; treat their numbers as an upper bound."),
+      ...cards, matrix, demand,
+    ],
+  };
+}
+
+function priorityPage() {
+  const p = "d4b92e6f3a7c4d8e0f21";
+  z = 0;
+  const named = (field, displayName) => ({ ...proj(field), displayName });
+  const lost = ispm("Profile Lost Revenue");
+  const cards = [
+    card(p, "card_osa", { x: 16, y: 136, w: 300, h: 88 }, ispm("On-Shelf Availability %"), "On-shelf availability (fast movers)", {
+      alt: "Share of days fast-moving items were on the shelf, outside suspected stock-outs.",
+    }),
+    card(p, "card_lost", { x: 332, y: 136, w: 300, h: 88 }, lost, "Est. revenue lost", {
+      valueColor: C.alert, units: "1000", precision: 0, alt: "Estimated revenue lost during suspected stock-outs.",
+    }),
+    card(p, "card_repeat_share", { x: 648, y: 136, w: 300, h: 88 }, ispm("Repeat Stock-out Loss %"), "Loss from repeat stock-outs", {
+      valueColor: C.alert, alt: "Share of the estimated loss on item-stores with two or more stock-outs.",
+    }),
+    card(p, "card_repeat_count", { x: 964, y: 136, w: 300, h: 88 }, ispm("Repeat Stock-out Item-Stores"), "Item-stores with 2+ stock-outs", {
+      units: "1", alt: "Number of item-stores with two or more suspected stock-outs.",
+    }),
+  ];
+  const osa = barChart(p, "bar_osa_store", { x: 16, y: 240, w: 480, h: 224 }, F.store, ispm("On-Shelf Availability %"), C.blue,
+    "On-shelf availability by store",
+    "Bar chart of on-shelf availability for fast movers in each store, lowest first; the axis starts at 90%.",
+    { sort: "Ascending", axisStart: 0.9, subtitle: "Fast movers only, axis starts at 90%" });
+  const byClass = barChart(p, "bar_lost_abc_xyz", { x: 16, y: 480, w: 480, h: 224 }, isp("abc_xyz"), lost, C.alert,
+    "Estimated loss by ABC × XYZ class",
+    "Bar chart of estimated stock-out loss by combined ABC and XYZ class, largest first.",
+    { labelUnits: "1000" });
+  const rankFilter = {
+    name: filterId(p, "top50"),
+    field: ispm("Loss Rank"),
+    type: "Advanced",
+    filter: {
+      Version: 2,
+      From: [{ Name: "i", Entity: "item_store_profile", Type: 0 }],
+      Where: [{
+        Condition: {
+          Comparison: {
+            ComparisonKind: 4,
+            Left: { Measure: { Expression: { SourceRef: { Source: "i" } }, Property: "Loss Rank" } },
+            Right: { Literal: { Value: "50L" } },
+          },
+        },
+      }],
+    },
+    howCreated: "User",
+  };
+  const table = container(p, "table_top50", { x: 512, y: 240, w: 752, h: 464 }, {
+    visualType: "tableEx",
+    query: {
+      queryState: {
+        Values: {
+          projections: [
+            named(isp("item_id"), "Item"),
+            named(isp("store_id"), "Store"),
+            named(isp("abc_xyz"), "Class"),
+            named(isp("demand_class"), "Demand"),
+            named(isp("stockout_runs"), "Runs"),
+            named(isp("stockout_days"), "Days out"),
+            named(lost, "Est. lost revenue"),
+            named(isp("last_stockout_end"), "Last ended"),
+          ],
+        },
+      },
+      sortDefinition: { sort: [{ field: lost, direction: "Descending" }], isDefaultSort: true },
+    },
+    objects: {
+      columnHeaders: [{ properties: { columnAdjustment: str("growToFit"), autoSizeColumnWidth: bool(true) } }],
+    },
+    visualContainerObjects: chartVcos("Top 50 item-stores by estimated loss",
+      "Table of the 50 item-store combinations with the largest estimated stock-out loss, with class, demand pattern, number of stock-outs, days out of stock and when the last one ended.",
+      "Ranked within the current category and store selection"),
+  }, { filterConfig: { filters: [rankFilter] } });
+  return {
+    name: p, displayName: "Stock-out priorities",
+    visuals: [
+      ...header(p, "Which shelves should be fixed first?", "A items carry 98% of the estimated loss, and repeat stock-outs 70%."),
+      ...slicers(p), ...cards, osa, byClass, table,
+    ],
+  };
+}
+
 // ---------- theme ----------
 function theme(name) {
   const axis = { gridlineColor: { solid: { color: C.grid } }, labelColor: { solid: { color: C.muted } } };
@@ -498,7 +735,7 @@ const write = (file, obj) => {
   fs.writeFileSync(file, JSON.stringify(obj, null, 2) + "\n");
 };
 
-const pages = [overview(), forecastPage(), stockoutPage()];
+const pages = [overview(), forecastPage(), stockoutPage(), inventoryPage(), priorityPage()];
 for (const page of pages) {
   const dir = path.join(DEF, "pages", page.name);
   fs.rmSync(path.join(dir, "visuals"), { recursive: true, force: true });

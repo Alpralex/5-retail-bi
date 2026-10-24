@@ -1,0 +1,325 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "d3737d4c2c25ea7cf4ce",
+  "position": {
+    "x": 512,
+    "y": 240,
+    "z": 7000,
+    "height": 464,
+    "width": 752,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "item_store_profile"
+                    }
+                  },
+                  "Property": "item_id"
+                }
+              },
+              "queryRef": "item_store_profile.item_id",
+              "nativeQueryRef": "item_id",
+              "displayName": "Item"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "item_store_profile"
+                    }
+                  },
+                  "Property": "store_id"
+                }
+              },
+              "queryRef": "item_store_profile.store_id",
+              "nativeQueryRef": "store_id",
+              "displayName": "Store"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "item_store_profile"
+                    }
+                  },
+                  "Property": "abc_xyz"
+                }
+              },
+              "queryRef": "item_store_profile.abc_xyz",
+              "nativeQueryRef": "abc_xyz",
+              "displayName": "Class"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "item_store_profile"
+                    }
+                  },
+                  "Property": "demand_class"
+                }
+              },
+              "queryRef": "item_store_profile.demand_class",
+              "nativeQueryRef": "demand_class",
+              "displayName": "Demand"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "item_store_profile"
+                    }
+                  },
+                  "Property": "stockout_runs"
+                }
+              },
+              "queryRef": "item_store_profile.stockout_runs",
+              "nativeQueryRef": "stockout_runs",
+              "displayName": "Runs"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "item_store_profile"
+                    }
+                  },
+                  "Property": "stockout_days"
+                }
+              },
+              "queryRef": "item_store_profile.stockout_days",
+              "nativeQueryRef": "stockout_days",
+              "displayName": "Days out"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "item_store_profile"
+                    }
+                  },
+                  "Property": "Profile Lost Revenue"
+                }
+              },
+              "queryRef": "item_store_profile.Profile Lost Revenue",
+              "nativeQueryRef": "Profile Lost Revenue",
+              "displayName": "Est. lost revenue"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "item_store_profile"
+                    }
+                  },
+                  "Property": "last_stockout_end"
+                }
+              },
+              "queryRef": "item_store_profile.last_stockout_end",
+              "nativeQueryRef": "last_stockout_end",
+              "displayName": "Last ended"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "item_store_profile"
+                  }
+                },
+                "Property": "Profile Lost Revenue"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Top 50 item-stores by estimated loss'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Table of the 50 item-store combinations with the largest estimated stock-out loss, with class, demand pattern, number of stock-outs, days out of stock and when the last one ended.'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Ranked within the current category and store selection'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "Filter976ce87a30d1225d0759b0ba",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "item_store_profile"
+              }
+            },
+            "Property": "Loss Rank"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "i",
+              "Entity": "item_store_profile",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 4,
+                  "Left": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "i"
+                        }
+                      },
+                      "Property": "Loss Rank"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "50L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ]
+  }
+}
