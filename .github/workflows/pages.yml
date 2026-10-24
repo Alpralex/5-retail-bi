@@ -1,4 +1,4 @@
-# Publica web/ no GitHub Pages (branch gh-pages), servido em guilhermerigonato.com/m5-retail-bi/
+# Publica web/ no GitHub Pages (branch gh-pages), servido em guilhermerigonato.com/5-retail-bi/
 name: pages
 on:
   push:
