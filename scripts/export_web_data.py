@@ -19,7 +19,7 @@ exports = {
     "weekly": """
         select strftime(week_start, '%Y-%m-%d'), store_id, category_id, units, round(revenue_usd)
         from mart_sales_weekly
-        where week_start > date '2011-01-24' and week_start < date '2016-06-13'   -- drop partial first and last weeks
+        where week_start > date '2011-01-24' and week_start <= date '2016-06-13'   -- drop the partial first week; the last week (13-19 Jun 2016) is complete
         order by 1, 2, 3""",
     # date, store, category, actual, forecast, item-day absolute error
     "forecast": """
