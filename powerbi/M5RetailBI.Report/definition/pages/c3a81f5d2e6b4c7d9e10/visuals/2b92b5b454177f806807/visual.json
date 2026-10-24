@@ -6,7 +6,7 @@
     "y": 352,
     "z": 5000,
     "height": 352,
-    "width": 752,
+    "width": 880,
     "tabOrder": 5000
   },
   "visual": {
@@ -66,7 +66,7 @@
               },
               "queryRef": "item_store_profile.Revenue Share %",
               "nativeQueryRef": "Revenue Share %",
-              "displayName": "Revenue share"
+              "displayName": "Revenue"
             },
             {
               "field": {
@@ -81,7 +81,7 @@
               },
               "queryRef": "item_store_profile.Item-Stores",
               "nativeQueryRef": "Item-Stores",
-              "displayName": "Item-stores"
+              "displayName": "Count"
             },
             {
               "field": {
@@ -274,7 +274,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'ABC: A = first 80% of revenue. XYZ: X = steady weekly sales, Z = most variable'"
+                  "Value": "'Revenue = share of revenue, Count = item-stores. ABC: A = first 80% of revenue. XYZ: X = steady weekly sales, Z = most variable'"
                 }
               }
             }

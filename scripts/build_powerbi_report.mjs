@@ -135,9 +135,10 @@ function whatIfSlicer(page, key, pos, field, title, defaultLiteral, alt) {
               From: [{ Name: "p", Entity: c.Expression.SourceRef.Entity, Type: 0 }],
               Where: [{
                 Condition: {
-                  In: {
-                    Expressions: [{ Column: { Expression: { SourceRef: { Source: "p" } }, Property: c.Property } }],
-                    Values: [[{ Literal: { Value: defaultLiteral } }]],
+                  Comparison: {
+                    ComparisonKind: 0,
+                    Left: { Column: { Expression: { SourceRef: { Source: "p" } }, Property: c.Property } },
+                    Right: { Literal: { Value: defaultLiteral } },
                   },
                 },
               }],
@@ -237,14 +238,14 @@ function card(page, key, pos, field, label, opts = {}) {
 function barChart(page, key, pos, category, value, color, title, alt, opts = {}) {
   const dataPoint = opts.dataPoint || [{ properties: { defaultColor: fill(color) } }];
   return container(page, key, pos, {
-    visualType: "barChart",
+    visualType: opts.type || "barChart",
     query: {
       queryState: { Category: { projections: [proj(category)] }, Y: { projections: [proj(value)] } },
       sortDefinition: { sort: [{ field: value, direction: opts.sort || "Descending" }], isDefaultSort: true },
     },
     objects: {
       dataPoint,
-      labels: [{ properties: { show: bool(true), fontSize: num(10), color: fill(C.text), ...(opts.labelUnits ? { labelDisplayUnits: str(opts.labelUnits) } : {}) } }],
+      labels: [{ properties: { show: bool(true), fontSize: num(opts.labelSize || 10), color: fill(C.text), ...(opts.labelUnits ? { labelDisplayUnits: str(opts.labelUnits) } : {}) } }],
       categoryAxis: [{ properties: { show: bool(true), fontSize: num(10), labelColor: fill(C.muted), showAxisTitle: bool(false) } }],
       valueAxis: [{ properties: { show: bool(false), gridlineShow: bool(false), showAxisTitle: bool(false), ...(opts.axisStart !== undefined ? { start: num(opts.axisStart) } : {}) } }],
       legend: [{ properties: { show: bool(false) } }],
@@ -507,7 +508,7 @@ function inventoryPage() {
     }),
   ];
   const shareRef = ref(ispm("Revenue Share %"));
-  const matrix = container(p, "matrix_abc_xyz", { x: 16, y: 352, w: 752, h: 352 }, {
+  const matrix = container(p, "matrix_abc_xyz", { x: 16, y: 352, w: 880, h: 352 }, {
     visualType: "pivotTable",
     query: {
       queryState: {
@@ -515,8 +516,8 @@ function inventoryPage() {
         Columns: { projections: [named(isp("xyz_class"), "XYZ")] },
         Values: {
           projections: [
-            named(ispm("Revenue Share %"), "Revenue share"),
-            named(ispm("Item-Stores"), "Item-stores"),
+            named(ispm("Revenue Share %"), "Revenue"),
+            named(ispm("Item-Stores"), "Count"),
             named(ispm("Safety Stock Value"), "Safety stock"),
           ],
         },
@@ -551,9 +552,9 @@ function inventoryPage() {
     },
     visualContainerObjects: chartVcos("Revenue, item count and safety stock by ABC × XYZ class",
       "Matrix of ABC revenue class by XYZ variability class with revenue share, item-store count and safety stock value; darker blue cells hold more revenue.",
-      "ABC: A = first 80% of revenue. XYZ: X = steady weekly sales, Z = most variable"),
+      "Revenue = share of revenue, Count = item-stores. ABC: A = first 80% of revenue. XYZ: X = steady weekly sales, Z = most variable"),
   });
-  const demand = container(p, "bar_demand_class", { x: 784, y: 352, w: 480, h: 352 }, {
+  const demand = container(p, "bar_demand_class", { x: 912, y: 352, w: 352, h: 352 }, {
     visualType: "clusteredBarChart",
     query: {
       queryState: {
@@ -614,11 +615,11 @@ function priorityPage() {
   const osa = barChart(p, "bar_osa_store", { x: 16, y: 240, w: 480, h: 224 }, F.store, ispm("On-Shelf Availability %"), C.blue,
     "On-shelf availability by store",
     "Bar chart of on-shelf availability for fast movers in each store, lowest first; the axis starts at 90%.",
-    { sort: "Ascending", axisStart: 0.9, subtitle: "Fast movers only, axis starts at 90%" });
+    { type: "columnChart", sort: "Ascending", axisStart: 0.9, labelSize: 9, subtitle: "Fast movers only, axis starts at 90%" });
   const byClass = barChart(p, "bar_lost_abc_xyz", { x: 16, y: 480, w: 480, h: 224 }, isp("abc_xyz"), lost, C.alert,
     "Estimated loss by ABC × XYZ class",
-    "Bar chart of estimated stock-out loss by combined ABC and XYZ class, largest first.",
-    { labelUnits: "1000" });
+    "Column chart of estimated stock-out loss by combined ABC and XYZ class, largest first.",
+    { type: "columnChart", labelUnits: "1000", labelSize: 9 });
   const rankFilter = {
     name: filterId(p, "top50"),
     field: ispm("Loss Rank"),

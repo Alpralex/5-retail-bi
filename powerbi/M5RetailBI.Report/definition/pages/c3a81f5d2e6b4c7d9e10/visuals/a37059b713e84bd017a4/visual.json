@@ -83,28 +83,23 @@
                 "Where": [
                   {
                     "Condition": {
-                      "In": {
-                        "Expressions": [
-                          {
-                            "Column": {
-                              "Expression": {
-                                "SourceRef": {
-                                  "Source": "p"
-                                }
-                              },
-                              "Property": "Service Level"
-                            }
-                          }
-                        ],
-                        "Values": [
-                          [
-                            {
-                              "Literal": {
-                                "Value": "0.95D"
+                      "Comparison": {
+                        "ComparisonKind": 0,
+                        "Left": {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "p"
                               }
-                            }
-                          ]
-                        ]
+                            },
+                            "Property": "Service Level"
+                          }
+                        },
+                        "Right": {
+                          "Literal": {
+                            "Value": "0.95D"
+                          }
+                        }
                       }
                     }
                   }

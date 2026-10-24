@@ -11,7 +11,7 @@
       "type": "SharedResources"
     },
     "customTheme": {
-      "name": "M5Retail-159ef3ff.json",
+      "name": "M5Retail-fae0725a.json",
       "reportVersionAtImport": {
         "visual": "2.11.0",
         "report": "3.4.0",
@@ -37,8 +37,8 @@
       "type": "RegisteredResources",
       "items": [
         {
-          "name": "M5Retail-159ef3ff.json",
-          "path": "M5Retail-159ef3ff.json",
+          "name": "M5Retail-fae0725a.json",
+          "path": "M5Retail-fae0725a.json",
           "type": "CustomTheme"
         }
       ]
